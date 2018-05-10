@@ -1,6 +1,6 @@
 # Hook Pipelines
 
-## Pipeline processing shamelessly based off [Feathers](https://github.com/feathersjs/feathers)
+### Pipeline processing shamelessly based off [Feathers](https://github.com/feathersjs/feathers) hooks flow
 
 Working example:
 ```js
