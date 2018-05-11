@@ -19,6 +19,32 @@ test('does nothing with no hooks', async () => {
   expect(output.data).toEqual(data)
 })
 
+test('can skip remaining processes', async () => {
+  const fn1 = jest.fn(context => {
+    return context
+  })
+  const fn2 = jest.fn(context => {
+    context.data.name = 'Failed'
+    return '__skip'
+  })
+  const fn3 = jest.fn(context => {
+    return context
+  })
+  const data = { name: 'Matt' }
+  const output = await pipeline()
+    .process([
+      fn1,
+      fn2,
+      fn3
+    ])
+    .run(data)
+
+  expect(fn1).toBeCalled()
+  expect(fn2).toBeCalled()
+  expect(fn3.mock.calls.length).toBe(0)
+  expect(output.data.name).toEqual('Failed')
+})
+
 test('can modify the data through the chain', async () => {
   const fn = jest.fn(arg => {
     arg.data.name = 'Bob'

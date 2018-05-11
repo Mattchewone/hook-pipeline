@@ -1,3 +1,5 @@
+const SKIP = '__skip'
+
 const application = {
   init () {
     // Some initial data which will be passed through the chain
@@ -53,21 +55,31 @@ function initialiseHooks (app) {
 
 function processHooks (hooks, obj) {
   let hookObj = obj
+  let updateCurrentHook = current => {
+    if (current) {
+      if (current === SKIP) {
+        return SKIP
+      }
+
+      hookObj = current
+    }
+    return hookObj
+  }
 
   const promise = hooks.reduce((promise, fn) => {
     const hook = fn.bind(this)
 
     if (hook.length === 2) {
-      promise = promise.then(hookObj => new Promise(resolve => {
+      promise = promise.then(hookObj => hookObj === SKIP ? SKIP : new Promise((resolve, reject) => {
         hook(hookObj, res => {
           resolve(res)
         })
       }))
     } else {
-      promise = promise.then(hookObj => hook(hookObj))
+      promise = promise.then(hookObj => hookObj === SKIP ? SKIP : hook(hookObj))
     }
 
-    return promise.then(obj => { return obj ? (hookObj = obj) : hookObj })
+    return promise.then(updateCurrentHook)
   }, Promise.resolve(obj))
 
   return promise.then(() => hookObj)

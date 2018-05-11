@@ -31,3 +31,6 @@ const output = await pipeline()
 // output.data === { name: 'Matt' }
 // output.error === [{ new Error('msg') }]
 ```
+
+### Skipping
+If your process failed or you wish to stop running any more hooks, set the return value from your function to '__skip'
